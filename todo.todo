@@ -1,6 +1,6 @@
 Šio projekto metu reikės sukurti internetinį forumą naudojant React, NodeJS Express ir MongoDB. Forumo tikslas - leisti užduoti klausimus programavimo tema,  ir žymėti patinkančius arba nepatinkančius klausimus. Galite įsivaizduoti kažką panašaus į https://stackoverflow.com/questions, tik jums rekės padaryt supaprastintą versiją.
 Funkcionalumas:
-☐ Registruotis
+✔ Registruotis @done(24-02-10 16:09)
 ☐ Prisijungti
 ☐ Užduoti naują klausimą (tik prisijungus)
 ☐ Ištrinti klausimą (tik prisiijungus)
@@ -9,7 +9,7 @@ Funkcionalumas:
 ☐ Peržiūrėti tik tuos klausimus kuriuos uždavė prisijungęs vartotojas.
 
 ### Backend'as
-☐ POST /register
+✔ POST /register @done(24-02-10 16:11)
 ☐ POST /login
 ☐ GET /questions
 ☐ GET /questions/:userId
@@ -21,9 +21,9 @@ Funkcionalumas:
 ### Frontend'as
 Frontend'as neturi nustatyto dizaino , kurį reikia atkartoti. Tačiau jum tenka sunkesnė užduotis - patiems sugalvoti ir sukurti puslapio dizainą. Svarbiausia išpildyti visus funkcinius reikalavimus ir validuoti vartotojo įvedamus duomenis.
 Užduoties įkėlimo instrukcijos
-1. Sukurti GitHub repozitoriją.
-2.!!!!!!!!!!!  Kiekvienos paskaitos metu ar darant užuoti koda pushint bent 2 kartus per paskaitą.  !!!!!!!!!!!
-3. Galutine kodo versija pasidalinti su dėstytoju.
+✔ 1. Sukurti GitHub repozitoriją. @done(24-02-10 16:11)
+☐ 2.!!!!!!!!!!!  Kiekvienos paskaitos metu ar darant užuoti koda pushint bent 2 kartus per paskaitą.  !!!!!!!!!!!
+☐ 3. Galutine kodo versija pasidalinti su dėstytoju.
 Sėkmės!
 
 user: email, password, name,  id, 

@@ -11,10 +11,6 @@ const generateHashedPass = (pass) => {
 
 const REGISTER = async (req, res) => {
   try {
-    // if (!req.body.email.includes("@")) {
-    //   return res.status(400).json({ message: "validation error" });
-    // }
-
     // if (req.body.name.length > 0) {
     //   // cia padaroma kad vardas butu didziaja raide
     //   const name = req.body.name;
@@ -26,7 +22,6 @@ const REGISTER = async (req, res) => {
     //   return res.status(400).json({ message: "validation error" });
     // }
 
-    //patikrinti ar vardas arba emailas neuzimtas
     const nameTaken = await userModel.exists({ name: req.body.name });
     const emailTaken = await userModel.exists({ name: req.body.email });
     if (nameTaken || emailTaken) {
@@ -40,18 +35,63 @@ const REGISTER = async (req, res) => {
       profile_picture: req.body.profile_picture,
     });
 
-    const user = await u.save();
-    // console.log(id);
+    // const user =
+    await u.save();
 
-    const token = jwt.sign({ id: user._id, email: user.email }, process.env.TOKEN_KEY, {
-      expiresIn: "2h",
+    // const token = jwt.sign({ id: user._id, email: user.email }, process.env.TOKEN_KEY, {
+    //   expiresIn: "2h",
+    // });
+
+    return res.status(200).json({
+      message: "registration succesfull",
+      // jwt_token: token
     });
-
-    return res.status(200).json({ message: "registration succesfull", jwt_token: token });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "error" });
   }
 };
 
-export { REGISTER };
+const LOGIN = async (req, res) => {
+  try {
+    // pagal vartotojo siunciama emaila randamas vartotojas
+    const user = await userModel.findOne({ email: req.body.email });
+    // console.log(user);
+    // jei objekto neranda:
+    if (!user) {
+      console.log("bad email");
+      return res.status(404).json({ message: "bad email or password" });
+    }
+    console.log("email ok");
+    // patikrinama ar siunčiamas slaptažodis sutampa
+    const isPassMatch = bcrypt.compareSync(req.body.password, user.password);
+    // jei slaptažodžiai nesutampa
+    if (!isPassMatch) {
+      console.log("bad pass");
+      return res.status(404).json({ message: "bad email or password" });
+    }
+    console.log("pass ok");
+    //---jei autentikacija gera---
+    //sugeneruojamas 2 val tokenas
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.TOKEN_KEY, {
+      expiresIn: "2h",
+    });
+
+    //siunčiama sekmes žinutė su tokenu
+    return res.status(200).json({
+      message: "login successful",
+      jwt_token: token,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "error" });
+  }
+};
+
+const VALIDATE = (req, res) => {
+  return res.status(200).json({
+    message: "user authenticated",
+  });
+};
+
+export { REGISTER, LOGIN, VALIDATE };
