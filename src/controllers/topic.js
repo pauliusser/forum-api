@@ -20,7 +20,13 @@ const CREATE_TOPIC = async (req, res) => {
 };
 const GET_ALL_TOPICS = async (req, res) => {
   try {
-    const topics = await topicModel.find();
+    const topics = await topicModel
+      .find()
+      .populate({
+        path: "initialPost",
+        options: { sort: { createdAt: 1 }, limit: 1 },
+      })
+      .populate("creator");
 
     return res.status(200).json({ message: "success", topics: topics });
   } catch (err) {

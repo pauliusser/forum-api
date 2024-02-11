@@ -1,8 +1,8 @@
 Šio projekto metu reikės sukurti internetinį forumą naudojant React, NodeJS Express ir MongoDB. Forumo tikslas - leisti užduoti klausimus programavimo tema,  ir žymėti patinkančius arba nepatinkančius klausimus. Galite įsivaizduoti kažką panašaus į https://stackoverflow.com/questions, tik jums rekės padaryt supaprastintą versiją.
 Funkcionalumas:
 ✔ Registruotis @done(24-02-10 16:09)
-☐ Prisijungti
-☐ Užduoti naują klausimą (tik prisijungus)
+✔ Prisijungti @done(24-02-10 21:19)
+✔ Užduoti naują klausimą (tik prisijungus) @done(24-02-11 01:11)
 ☐ Ištrinti klausimą (tik prisiijungus)
 ☐ Žymėti/atžymėti patinkačius ir nepatinkančius klausymus (like/dislike) (tik prisijungus) 
 ☐ Peržiūrėti klausimų sąrašą.
@@ -10,8 +10,8 @@ Funkcionalumas:
 
 ### Backend'as
 ✔ POST /register @done(24-02-10 16:11)
-☐ POST /login
-☐ GET /questions
+✔ POST /login @done(24-02-10 21:19)
+✔ GET /questions @done(24-02-11 01:11)
 ☐ GET /questions/:userId
 ☐ POST /question
 ☐ POST /question/:id/like
