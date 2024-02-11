@@ -4,6 +4,7 @@ const postSchema = mongoose.Schema({
   content: { type: String, required: true, min: 3 },
   author: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // reference to the User who authored the post
   topic: { type: mongoose.Schema.Types.ObjectId, ref: "Topic" }, // reference to the Topic the post belongs to
+  votes: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
 });
 

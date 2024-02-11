@@ -30,5 +30,34 @@ const CREATE_POST = async (req, res) => {
     return res.status(500).json({ message: "error" });
   }
 };
+const GET_ALL_POSTS_BY_TOPIC_ID = async (req, res) => {
+  try {
+    const posts = await postModel
+      .find({ topic: req.params.id })
+      .populate({
+        path: "topic",
+        select: "title",
+      })
+      .populate({
+        path: "author",
+        select: "name profile_picture",
+      });
 
-export { CREATE_POST };
+    return res.status(200).json({ message: "success", posts: posts });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "error" });
+  }
+};
+
+const DELETE_POST_BY_ID = async (req, res) => {
+  try {
+    const post = await postModel.findByIdAndDelete(req.params.id);
+    return res.status(200).json({ post_deleted: post });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "post deleted", post: "error" });
+  }
+};
+
+export { CREATE_POST, GET_ALL_POSTS_BY_TOPIC_ID, DELETE_POST_BY_ID };
