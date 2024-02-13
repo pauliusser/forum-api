@@ -1,5 +1,6 @@
 import postModel from "../models/post.js";
 import topicModel from "../models/topic.js";
+// import voteModel from "../models/vote.js";
 
 const CREATE_POST = async (req, res) => {
   try {

@@ -3,9 +3,9 @@ Funkcionalumas:
 ✔ Registruotis @done(24-02-10 16:09)
 ✔ Prisijungti @done(24-02-10 21:19)
 ✔ Užduoti naują klausimą (tik prisijungus) @done(24-02-11 01:11)
-☐ Ištrinti klausimą (tik prisiijungus)
+✔ Ištrinti klausimą (tik prisiijungus) @done(24-02-11 21:50)
 ☐ Žymėti/atžymėti patinkačius ir nepatinkančius klausymus (like/dislike) (tik prisijungus) 
-☐ Peržiūrėti klausimų sąrašą.
+✔ Peržiūrėti klausimų sąrašą. @done(24-02-11 21:51)
 ☐ Peržiūrėti tik tuos klausimus kuriuos uždavė prisijungęs vartotojas.
 
 ### Backend'as
@@ -16,7 +16,7 @@ Funkcionalumas:
 ☐ POST /question
 ☐ POST /question/:id/like
 ☐ POST /question/:id/dislike
-☐ DELETE /question/:id
+✔ DELETE /question/:id @done(24-02-11 21:53)
 
 ### Frontend'as
 Frontend'as neturi nustatyto dizaino , kurį reikia atkartoti. Tačiau jum tenka sunkesnė užduotis - patiems sugalvoti ir sukurti puslapio dizainą. Svarbiausia išpildyti visus funkcinius reikalavimus ir validuoti vartotojo įvedamus duomenis.
