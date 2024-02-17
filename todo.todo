@@ -6,16 +6,16 @@ Funkcionalumas:
 ✔ Ištrinti klausimą (tik prisiijungus) @done(24-02-11 21:50)
 ✔ Žymėti/atžymėti patinkačius ir nepatinkančius klausymus (like/dislike) (tik prisijungus) @done(24-02-16 13:12)
 ✔ Peržiūrėti klausimų sąrašą. @done(24-02-11 21:51)
-☐ Peržiūrėti tik tuos klausimus kuriuos uždavė prisijungęs vartotojas.
+✔ Peržiūrėti tik tuos klausimus kuriuos uždavė prisijungęs vartotojas. @done(24-02-17 20:33)
 
 ### Backend'as
 ✔ POST /register @done(24-02-10 16:11)
 ✔ POST /login @done(24-02-10 21:19)
 ✔ GET /questions @done(24-02-11 01:11)
 ☐ GET /questions/:userId
-☐ POST /question
-☐ POST /question/:id/like
-☐ POST /question/:id/dislike
+✔ POST /question @done(24-02-17 20:33)
+✔ POST /question/:id/like @done(24-02-17 20:33)
+✔ POST /question/:id/dislike @done(24-02-17 20:33)
 ✔ DELETE /question/:id @done(24-02-11 21:53)
 
 ### Frontend'as

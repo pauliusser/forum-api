@@ -14,6 +14,7 @@ const CREATE_TOPIC = async (req, res) => {
     return res.status(200).json({
       message: "topic created",
       topic: topic,
+      status: req.body.status,
     });
   } catch (err) {
     console.log(err);
@@ -70,7 +71,9 @@ const GET_ALL_TOPICS = async (req, res) => {
       },
     ]);
 
-    return res.status(200).json({ message: "success", topics: topics });
+    return res
+      .status(200)
+      .json({ message: "success", topics: topics, status: req.body.status });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "error" });
@@ -81,7 +84,9 @@ const GET_TOPIC_BY_ID = async (req, res) => {
   try {
     const topic = await topicModel.findOne({ _id: req.params.id });
 
-    return res.status(200).json({ message: "success", topic: topic });
+    return res
+      .status(200)
+      .json({ message: "success", topic: topic, status: req.body.status });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "error" });
@@ -90,12 +95,10 @@ const GET_TOPIC_BY_ID = async (req, res) => {
 
 const DELETE_TOPIC_BY_ID = async (req, res) => {
   try {
-    //patikrinti ar topic creator sutampa su userId
     const userId = req.body.userId;
     const topicObj = await topicModel.findById(req.params.id);
-    // console.log(topicObj.creator);
-    // console.log(userId);
-    if (topicObj.creator != userId) {
+
+    if (topicObj.creator != userId && req.body.status != "admin") {
       return res.status(400).json({ message: "error" });
     }
     const topic = await topicModel.findByIdAndDelete(req.params.id);
@@ -104,6 +107,7 @@ const DELETE_TOPIC_BY_ID = async (req, res) => {
       message: "topic deleted",
       topic_deleted: topic,
       posts_deleted: posts,
+      status: req.body.status,
     });
   } catch (err) {
     console.log(err);

@@ -96,7 +96,29 @@ const LOGIN = async (req, res) => {
 const VALIDATE = (req, res) => {
   return res.status(200).json({
     message: "user authenticated",
+    status: req.body.status,
   });
 };
 
-export { REGISTER, LOGIN, VALIDATE };
+const GET_CURRENT_USER = async (req, res) => {
+  try {
+    const userData = await userModel.findById(req.body.userId);
+
+    const user = {
+      email: userData.email,
+      name: userData.name,
+      profile_picture: userData.profile_picture,
+    };
+
+    return res.status(200).json({
+      message: "success",
+      user: user,
+      status: req.body.status,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "error" });
+  }
+};
+
+export { REGISTER, LOGIN, VALIDATE, GET_CURRENT_USER };

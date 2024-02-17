@@ -1,6 +1,6 @@
 import express from "express";
 import auth from "../middleware/auth.js";
-// import authAdmin from "../middleware/authAdmin.js";
+
 import {
   CREATE_TOPIC,
   GET_ALL_TOPICS,

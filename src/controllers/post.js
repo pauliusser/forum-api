@@ -26,6 +26,7 @@ const CREATE_POST = async (req, res) => {
     return res.status(200).json({
       message: "post created",
       post: post,
+      status: req.body.status,
     });
   } catch (err) {
     console.log(err);
@@ -142,7 +143,7 @@ const GET_ALL_POSTS_BY_TOPIC_ID = async (req, res) => {
       },
     ]);
 
-    res.json(postsWithTopicAndVote);
+    res.json({ posts: postsWithTopicAndVote, status: req.body.status });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -150,8 +151,17 @@ const GET_ALL_POSTS_BY_TOPIC_ID = async (req, res) => {
 
 const DELETE_POST_BY_ID = async (req, res) => {
   try {
-    const postId = req.params.id;
-    const post = await postModel.findByIdAndDelete(postId);
+    //surasti user
+    const userId = req.body.userId;
+    //surasti author
+    const postObj = await postModel.findById(req.params.id);
+    const authorId = postObj.author;
+    //palyginti user ir author ir ar ne adminas
+    if (userId != authorId && req.body.status != "admin") {
+      return res.status(404).json({ message: "error" });
+    }
+
+    const post = await postModel.findByIdAndDelete(req.params.id);
 
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
@@ -166,14 +176,36 @@ const DELETE_POST_BY_ID = async (req, res) => {
         message: "topic empty, deleted post and topic",
         topic: topic,
         post: post,
+        status: req.body.status,
       });
     }
 
-    return res.status(200).json({ message: "Post deleted", post: post });
+    return res
+      .status(200)
+      .json({ message: "Post deleted", post: post, status: req.body.status });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: "Error deleting post", error: err });
+    return res.status(500).json({ message: "error", error: err });
   }
 };
 
-export { CREATE_POST, GET_ALL_POSTS_BY_TOPIC_ID, DELETE_POST_BY_ID };
+const GET_ALL_POSTS_BY_USER_ID = async (req, res) => {
+  try {
+    const response = await postModel.find({
+      author: req.body.userId,
+    });
+    return res
+      .status(200)
+      .json({ message: "Post deleted", posts: response, status: req.body.status });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "error", error: err });
+  }
+};
+
+export {
+  CREATE_POST,
+  GET_ALL_POSTS_BY_TOPIC_ID,
+  DELETE_POST_BY_ID,
+  GET_ALL_POSTS_BY_USER_ID,
+};

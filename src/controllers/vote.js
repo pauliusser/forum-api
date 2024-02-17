@@ -29,9 +29,12 @@ const CREATE_VOTE = async (req, res) => {
     const voteResponse = await vote.save();
 
     console.log("create vote");
-    return res
-      .status(200)
-      .json({ message: "vote_created", vote: voteResponse, post: updatedPost });
+    return res.status(200).json({
+      message: "vote_created",
+      vote: voteResponse,
+      post: updatedPost,
+      status: req.body.status,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "error" });
@@ -60,6 +63,7 @@ const UPDATE_VOTE = async (req, res) => {
       message: "vote updated",
       updatedVote: updatedVote,
       updatedPost: updatedPost,
+      status: req.body.status,
     });
   } catch (err) {
     console.log(err);
@@ -88,6 +92,7 @@ const DELETE_VOTE_BY_POST_ID = async (req, res) => {
       message: "vote deleted and post updated",
       updatedPost: updatedPost,
       deletedVote: deletedVote,
+      status: req.body.status,
     });
   } catch (err) {
     console.log(err);
@@ -99,7 +104,11 @@ const GET_ALL_VOTES = async (req, res) => {
   try {
     const votes = await voteModel.find();
 
-    return res.status(200).json({ message: "success", votes: votes });
+    return res.status(200).json({
+      message: "success",
+      votes: votes,
+      status: req.body.status,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "error" });
