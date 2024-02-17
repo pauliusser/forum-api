@@ -38,45 +38,29 @@ const CREATE_VOTE = async (req, res) => {
   }
 };
 
-// const CREATE_VOTE = async (req, res) => {
-//   try {
-//     const { userId, post: postId, type } = req.body;
-
-//     // Find the post by its ID
-//     const post = await Post.findById(postId);
-
-//     if (!post) {
-//       return res.status(404).json({ message: "Post not found" });
-//     }
-
-//     // Determine the vote value based on the type
-//     let voteValue = 0;
-//     if (type === "upvote") {
-//       voteValue = 1;
-//     } else if (type === "downvote") {
-//       voteValue = -1;
-//     } else {
-//       return res.status(400).json({ message: "Invalid vote type" });
-//     }
-
-//     // Update the votes field of the post
-//     post.votes += voteValue;
-
-//     // Save the updated post
-//     const updatedPost = await post.save();
-
-//     console.log("create vote");
-//     return res.status(200).json({ message: "vote_created", post: updatedPost });
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).json({ message: "error" });
-//   }
-// };
-
 const UPDATE_VOTE = async (req, res) => {
   try {
+    console.log({
+      postId: req.params.id,
+      userId: req.body.userId,
+    });
+    const updatedVote = await voteModel.findOneAndUpdate(
+      { post: req.params.id, user: req.body.userId },
+      { ...req.body },
+      { new: true }
+    );
+    const postObj = await postModel.findById(req.params.id);
+    const voteValue =
+      req.body.type === "upvote" ? 2 : req.body.type === "downvote" ? -2 : 0; // 2 ir -2 nes reiksme pasikeicia is +1 iki -1 arba atvirksciai
+    postObj.votes += voteValue;
+    const updatedPost = await postObj.save();
+
     console.log("update vote endpoint not finished");
-    return res.status(200).json({ message: "vote updated" });
+    return res.status(200).json({
+      message: "vote updated",
+      updatedVote: updatedVote,
+      updatedPost: updatedPost,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "error" });
@@ -85,14 +69,26 @@ const UPDATE_VOTE = async (req, res) => {
 
 const DELETE_VOTE_BY_POST_ID = async (req, res) => {
   try {
-    const response = await voteModel.findOneAndDelete({
-      post: req.params.id,
+    const voteRes = await voteModel.findOne({
       user: req.body.userId,
+      post: req.params.id,
     });
-    if (!response) {
-      return res.status(404).json({ message: "Vote not found" });
-    }
-    return res.status(200).json({ message: "vote deleted", vote: response });
+
+    const postObj = await postModel.findById(req.params.id);
+
+    const voteValue =
+      voteRes.type === "upvote" ? 1 : voteRes.type === "downvote" ? -1 : 0;
+    // delete vote
+    const deletedVote = await voteModel.findByIdAndDelete(voteRes._id);
+
+    postObj.votes -= voteValue;
+    const updatedPost = await postObj.save();
+
+    return res.status(200).json({
+      message: "vote deleted and post updated",
+      updatedPost: updatedPost,
+      deletedVote: deletedVote,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Error deleting vote" });

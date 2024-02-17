@@ -62,6 +62,7 @@ const LOGIN = async (req, res) => {
       console.log("bad email");
       return res.status(404).json({ message: "bad email or password" });
     }
+    // console.log(user);
     console.log("email ok");
     // patikrinama ar siunčiamas slaptažodis sutampa
     const isPassMatch = bcrypt.compareSync(req.body.password, user.password);
@@ -73,9 +74,13 @@ const LOGIN = async (req, res) => {
     console.log("pass ok");
     //---jei autentikacija gera---
     //sugeneruojamas 2 val tokenas
-    const token = jwt.sign({ id: user._id, email: user.email }, process.env.TOKEN_KEY, {
-      expiresIn: "2h",
-    });
+    const token = jwt.sign(
+      { id: user._id, email: user.email, status: user.status },
+      process.env.TOKEN_KEY,
+      {
+        expiresIn: "2h",
+      }
+    );
 
     //siunčiama sekmes žinutė su tokenu
     return res.status(200).json({

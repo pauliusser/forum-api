@@ -1,6 +1,7 @@
 import postModel from "../models/post.js";
 import topicModel from "../models/topic.js";
 // import voteModel from "../models/vote.js";
+import mongoose from "mongoose";
 
 const CREATE_POST = async (req, res) => {
   try {
@@ -31,33 +32,147 @@ const CREATE_POST = async (req, res) => {
     return res.status(500).json({ message: "error" });
   }
 };
-const GET_ALL_POSTS_BY_TOPIC_ID = async (req, res) => {
-  try {
-    const posts = await postModel
-      .find({ topic: req.params.id })
-      .populate({
-        path: "topic",
-        select: "title",
-      })
-      .populate({
-        path: "author",
-        select: "name profile_picture",
-      });
 
-    return res.status(200).json({ message: "success", posts: posts });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "error" });
+// const GET_ALL_POSTS_BY_TOPIC_ID = async (req, res) => {
+//   const topicId = req.params.id;
+//   const userId = req.body.userId;
+
+//   try {
+//     const postsWithTopicAndVote = await postModel.aggregate([
+//       {
+//         $match: { topic: mongoose.Types.ObjectId.createFromHexString(topicId) }, // Match posts with the specified topicId
+//       },
+//       {
+//         $lookup: {
+//           from: "users",
+//           localField: "author",
+//           foreignField: "_id",
+//           as: "authorDetails",
+//         },
+//       },
+
+//       {
+//         $lookup: {
+//           from: "votes",
+//           let: {
+//             postId: "$_id",
+//             userId: mongoose.Types.ObjectId.createFromHexString(userId),
+//           },
+//           pipeline: [
+//             {
+//               $match: {
+//                 $expr: {
+//                   $and: [{ $eq: ["$post", "$$postId"] }, { $eq: ["$user", "$$userId"] }],
+//                 },
+//               },
+//             },
+//           ],
+//           as: "userVote",
+//         },
+//       },
+//       {
+//         $addFields: {
+//           authorName: { $arrayElemAt: ["$authorDetails.name", 0] },
+//           authorProfilePicture: { $arrayElemAt: ["$authorDetails.profile_picture", 0] },
+//           userVote: { $arrayElemAt: ["$userVote.type", 0] },
+//         },
+//       },
+//       {
+//         $project: {
+//           authorDetails: 0, // Remove authorDetails field
+//         },
+//       },
+//     ]);
+
+//     res.json(postsWithTopicAndVote);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+const GET_ALL_POSTS_BY_TOPIC_ID = async (req, res) => {
+  const topicId = req.params.id;
+  const userId = req.body.userId;
+
+  try {
+    const postsWithTopicAndVote = await postModel.aggregate([
+      {
+        $match: { topic: mongoose.Types.ObjectId.createFromHexString(topicId) }, // Match posts with the specified topicId
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "authorDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "votes",
+          let: {
+            postId: "$_id",
+            userId: mongoose.Types.ObjectId.createFromHexString(userId),
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$post", "$$postId"] }, { $eq: ["$user", "$$userId"] }],
+                },
+              },
+            },
+          ],
+          as: "userVote",
+        },
+      },
+      {
+        $addFields: {
+          authorName: { $arrayElemAt: ["$authorDetails.name", 0] },
+          authorProfilePicture: { $arrayElemAt: ["$authorDetails.profile_picture", 0] },
+          userVote: { $arrayElemAt: ["$userVote.type", 0] },
+          isAuthor: {
+            $eq: ["$author", mongoose.Types.ObjectId.createFromHexString(userId)],
+          }, // Add a boolean field to indicate if the userId matches the author
+        },
+      },
+      {
+        $project: {
+          authorDetails: 0, // Remove authorDetails field
+        },
+      },
+    ]);
+
+    res.json(postsWithTopicAndVote);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
 const DELETE_POST_BY_ID = async (req, res) => {
   try {
-    const post = await postModel.findByIdAndDelete(req.params.id);
-    return res.status(200).json({ post_deleted: post });
+    const postId = req.params.id;
+    const post = await postModel.findByIdAndDelete(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Check if the topic associated with the post has any other posts left
+    const remainingPostsCount = await postModel.countDocuments({ topic: post.topic });
+    if (remainingPostsCount === 0) {
+      // If no remaining posts, delete the topic as well
+      const topic = await topicModel.findByIdAndDelete(post.topic);
+      return res.status(200).json({
+        message: "topic empty, deleted post and topic",
+        topic: topic,
+        post: post,
+      });
+    }
+
+    return res.status(200).json({ message: "Post deleted", post: post });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ message: "post deleted", post: "error" });
+    return res.status(500).json({ message: "Error deleting post", error: err });
   }
 };
 
