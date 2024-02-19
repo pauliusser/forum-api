@@ -1,5 +1,6 @@
 import topicModel from "../models/topic.js";
 import postModel from "../models/post.js";
+import voteModel from "../models/vote.js";
 import mongoose from "mongoose";
 
 const CREATE_TOPIC = async (req, res) => {
@@ -21,22 +22,6 @@ const CREATE_TOPIC = async (req, res) => {
     return res.status(500).json({ message: "error" });
   }
 };
-// const GET_ALL_TOPICS = async (req, res) => {
-//   try {
-//     const topics = await topicModel
-//       .find()
-//       .populate({
-//         path: "initialPost",
-//         options: { sort: { createdAt: 1 }, limit: 1 },
-//       })
-//       .populate("creator");
-
-//     return res.status(200).json({ message: "success", topics: topics });
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).json({ message: "error" });
-//   }
-// };
 
 const GET_ALL_TOPICS = async (req, res) => {
   try {
@@ -102,11 +87,17 @@ const DELETE_TOPIC_BY_ID = async (req, res) => {
       return res.status(400).json({ message: "error" });
     }
     const topic = await topicModel.findByIdAndDelete(req.params.id);
+    const postsData = await postModel.find({ topic: req.params.id });
     const posts = await postModel.deleteMany({ topic: req.params.id });
+    const postIds = postsData.map((post) => post._id);
+
+    // Delete votes associated with the deleted posts
+    const votes = await voteModel.deleteMany({ post: { $in: postIds } });
     return res.status(200).json({
       message: "topic deleted",
       topic_deleted: topic,
       posts_deleted: posts,
+      votes_deleted: votes,
       status: req.body.status,
     });
   } catch (err) {
